@@ -8,13 +8,6 @@ class SockTalker extends SockBase {
 		this.port := port
 	}
 	
-	; Send a Message, return the response
-	Send(message){
-		this.Socket := new SocketTCP()
-		this.Socket.connect(this.address, this.port)
-		this.Socket.sendText(message)
-		return this.Socket.recvText()
-	}
 }
 
 ; A Listener listens for messages and sends a response
@@ -35,6 +28,14 @@ class SockListener extends SockBase {
 
 ; Base class to inherit useful stuff from
 class SockBase {
+	; Send a Message, return the response
+	Send(message){
+		this.Socket := new SocketTCP()
+		this.Socket.connect(this.address, this.port)
+		this.Socket.sendText(message)
+		return this.Socket.recvText()
+	}
+	
 	; Message classes. Designed to be serialized to JSON
 	Class Message {
 		ComputerName := A_ComputerName

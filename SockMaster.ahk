@@ -12,6 +12,7 @@ class SockMaster extends SockBase {
 
 		; Initialize connection settings etc
 		this.talker := new SockTalker("localhost", 12345)
+		this.listener := new SockListener(this.MessageReceived.Bind(this), "addr_any", 12346)
 	}
 		
 	; Test code to fire a message off
@@ -20,6 +21,13 @@ class SockMaster extends SockBase {
 		msg.command := "Slave, Do something for me"
 		replytext := this.talker.Send(JSON.Dump(msg))
 		reply := JSON.Load(replytext)
+		LV_Add(,msg.command, reply.command)
+	}
+	
+	MessageReceived(socket){
+		newTcp := socket.accept()
+		text := newTcp.recvText()
+		msg := JSON.Load(text)
 		LV_Add(,msg.command, reply.command)
 	}
 }

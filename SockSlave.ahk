@@ -21,5 +21,12 @@ class SockSlave extends SockBase {
 		response.command := "As you wish, master"
 		LV_Add(,msg.command, response.command)
 		newTcp.sendText(JSON.Dump(response))
+		
+		Sleep 1000
+		talker := new SockTalker("localhost", 12346)
+		delayed := new this.Message()
+		delayed.command := "DELAYED"
+		replytext := talker.Send(JSON.Dump(delayed))
+		
 	}
 }
