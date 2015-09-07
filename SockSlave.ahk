@@ -1,8 +1,20 @@
+; Example code
 #SingleInstance force
 #include SockPuppet.ahk
 
-ss := new SockSlave()
+ms := new MySlave()
 
+class MySlave extends SockSlave {
+	ProcessJob(original_msg){
+		Sleep 1000 ; simulate processing of job
+		talker := new SockTalker(original_msg.IPAddress, this.port+1)
+		delayed := new this.Message()
+		delayed.command := "DELAYED"
+		replytext := talker.Send(JSON.Dump(delayed))
+	}
+}
+
+; Library code ================================
 class SockSlave extends SockBase {
 	__New(){
 		this.CreateGui("x330 y0", "Command|Response")
@@ -24,14 +36,6 @@ class SockSlave extends SockBase {
 		newTcp.sendText(JSON.Dump(response))
 		
 		fn := this.ProcessJob.Bind(this, msg)
-		SetTimer, % fn, -0	; fire off "thead"
-	}
-	
-	ProcessJob(original_msg){
-		Sleep 1000 ; simulate processing of job
-		talker := new SockTalker(original_msg.IPAddress, this.port+1)
-		delayed := new this.Message()
-		delayed.command := "DELAYED"
-		replytext := talker.Send(JSON.Dump(delayed))
+		SetTimer, % fn, -0	; fire off asynch thread
 	}
 }

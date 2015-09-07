@@ -1,20 +1,17 @@
+; Example code
 #SingleInstance force
 #include SockPuppet.ahk
 
-sm := new SockMaster()
+mm := new MyMaster()
 
-class SockMaster extends SockBase {
+class MyMaster extends SockMaster {
 	__New(){
-		this.CreateGui("x0 y0", "Command|Response")
+		base.__New(aPrams*)
 		; Bind Test Hotkey
 		fn := this.Test.Bind(this)
 		hotkey, F12, % fn
-
-		; Initialize connection settings etc
-		this.talker := new SockTalker("localhost", 12345)
-		this.listener := new SockListener(this.MessageReceived.Bind(this), "addr_any", 12346)
 	}
-		
+	
 	; Test code to fire a message off
 	Test(){
 		msg := new this.Message()
@@ -23,7 +20,18 @@ class SockMaster extends SockBase {
 		reply := JSON.Load(replytext)
 		LV_Add(,msg.command, reply.command)
 	}
-	
+}
+
+; Library code ===========================================================
+class SockMaster extends SockBase {
+	__New(){
+		this.CreateGui("x0 y0", "Command|Response")
+
+		; Initialize connection settings etc
+		this.talker := new SockTalker("localhost", 12345)
+		this.listener := new SockListener(this.MessageReceived.Bind(this), "addr_any", 12346)
+	}
+		
 	; An Incoming message happened - eg a delayed "I have completed all tasks, here are the results" message
 	MessageReceived(socket){
 		newTcp := socket.accept()
