@@ -3,17 +3,21 @@
 
 sm := new SockMaster()
 
-class SockMaster {
+class SockMaster extends SockBase {
 	__New(){
 		; Bind Test Hotkey
 		fn := this.Test.Bind(this)
 		hotkey, F12, % fn
 
-		this.talker := new SockTalker()
+		; Initialize connection settings etc
+		this.talker := new SockTalker("localhost", 12345)
 	}
 	
+	; Test code to fire a message off
 	Test(){
-		reply := this.talker.Send("Slave, do something for me")
-		MsgBox, % "MASTER: " reply
+		msg := new this.Message()
+		msg.command := "Slave, Do something for me"
+		reply := this.talker.Send(JSON.Dump(msg))
+		MsgBox, % "MASTER received message:`n" reply
 	}
 }
