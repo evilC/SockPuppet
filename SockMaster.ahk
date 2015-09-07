@@ -24,6 +24,7 @@ class SockMaster extends SockBase {
 		LV_Add(,msg.command, reply.command)
 	}
 	
+	; An Incoming message happened - eg a delayed "I have completed all tasks, here are the results" message
 	MessageReceived(socket){
 		newTcp := socket.accept()
 		text := newTcp.recvText()
