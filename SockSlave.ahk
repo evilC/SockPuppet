@@ -21,7 +21,5 @@ class SockSlave extends SockBase {
 		response.command := "As you wish, master"
 		LV_Add(,msg.command, response.command)
 		newTcp.sendText(JSON.Dump(response))
-		Sleep 1000
-		newTcp.sendText(JSON.Dump(response))
 	}
 }
