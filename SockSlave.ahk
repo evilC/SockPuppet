@@ -13,7 +13,9 @@ class MySlave extends SockSlave {
 		Sleep 1000 ; simulate processing of job
 		talker := new SockTalker(original_msg.IPAddress, this.port+1)
 		delayed := new this.Message()
-		delayed.command := "DELAYED"
+		delayed.command := "ASYNCH RESPONSE"
+		Gui, ListView, % this.hLVOutgoing
+		LV_Add(, delayed.IPAddress, "(Asynch) " delayed.command)
 		replytext := talker.Send(JSON.Dump(delayed))
 	}
 }
@@ -34,11 +36,11 @@ class SockSlave extends SockBase {
 		text := newTcp.recvText()
 		msg := JSON.Load(text)
 		Gui, ListView, % this.hLVIncoming
-		LV_Add(, msg.command)
+		LV_Add(, msg.IPAddress, msg.command)
 		response := new this.Message()
 		response.command := "As you wish, master"
 		Gui, ListView, % this.hLVOutgoing
-		LV_Add(, response.command)
+		LV_Add(, response.IPAddress, response.command)
 		newTcp.sendText(JSON.Dump(response))
 		
 		fn := this.ProcessJob.Bind(this, msg)

@@ -50,16 +50,16 @@ class SockBase {
 		Loop 2 {
 			if(seq[type,A_Index] = "i"){
 				Gui, Add, Text, w300 Center, Incoming Messages
-				Gui, Add, ListView, w300 h200 xm hwndhLVIncoming, A|B
+				Gui, Add, ListView, w300 h200 xm hwndhLVIncoming, From|Command
 				this.hLVIncoming := hLVIncoming
 			} else if(seq[type,A_Index] = "o"){
 				Gui, Add, Text, w300 Center, Outgoing Messages
-				Gui, Add, ListView, w300 h200 xm hwndhLVOutgoing, C|D
+				Gui, Add, ListView, w300 h200 xm hwndhLVOutgoing, To|Command
 				this.hLVOutgoing := hLVOutgoing
 			}
 			added++
-			LV_ModifyCol(1,140)
-			LV_ModifyCol(2,140)
+			LV_ModifyCol(1,80)
+			LV_ModifyCol(2,200)
 		}
 		Gui, Add, Button, w300 hwndhwnd, Clear
 		fn := this.Clear.Bind(this)

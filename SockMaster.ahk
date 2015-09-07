@@ -23,9 +23,9 @@ class MyMaster extends SockMaster {
 		replytext := this.talker.Send(JSON.Dump(msg))
 		reply := JSON.Load(replytext)
 		Gui, ListView, % this.hLVOutgoing
-		LV_Add(,msg.command)
+		LV_Add(, msg.IPAddress,msg.command)
 		Gui, ListView, % this.hLVIncoming
-		LV_Add(,reply.command)
+		LV_Add(,reply.IPAddress,reply.command)
 	}
 }
 
@@ -44,6 +44,6 @@ class SockMaster extends SockBase {
 		newTcp := socket.accept()
 		text := newTcp.recvText()
 		msg := JSON.Load(text)
-		LV_Add(,msg.command, reply.command)
+		LV_Add(,msg.IPAddress, msg.command)
 	}
 }
