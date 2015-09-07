@@ -1,4 +1,10 @@
 #SingleInstance force
 #include SockPuppet.ahk
 
-listener := new SockListener()
+ss := new SockSlave()
+
+class SockSlave {
+	__New(){
+		this.listener := new SockListener()
+	}
+}

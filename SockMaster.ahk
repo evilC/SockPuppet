@@ -1,8 +1,16 @@
 #SingleInstance force
 #include SockPuppet.ahk
 
-talker := new SockTalker()
-return
+sm := new SockMaster()
 
-F12::
-	talker.Send()
+class SockMaster {
+	__New(){
+		this.talker := new SockTalker()
+		fn := this.Test.Bind(this)
+		hotkey, F12, % fn
+	}
+	
+	Test(){
+		this.talker.Send()
+	}
+}

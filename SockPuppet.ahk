@@ -1,5 +1,5 @@
 #include <Socket>		; http://www.autohotkey.com/board/topic/94376-socket-class-%C3%BCberarbeitet/
-;#include <JSON>			; http://ahkscript.org/boards/viewtopic.php?t=627
+#include <JSON>			; http://ahkscript.org/boards/viewtopic.php?t=627
 
 class SockTalker {
 	Send(){
