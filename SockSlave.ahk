@@ -3,6 +3,10 @@
 #include SockPuppet.ahk
 
 ms := new MySlave()
+return
+
+GuiClose:
+	ExitApp
 
 class MySlave extends SockSlave {
 	ProcessJob(original_msg){
@@ -17,7 +21,7 @@ class MySlave extends SockSlave {
 ; Library code ================================
 class SockSlave extends SockBase {
 	__New(){
-		this.CreateGui("x330 y0", "Command|Response")
+		this.CreateGui("x330 y0", "s")
 		this.port := 12345
 
 		; Initialize listener and set callback
@@ -29,10 +33,12 @@ class SockSlave extends SockBase {
 		newTcp := socket.accept()
 		text := newTcp.recvText()
 		msg := JSON.Load(text)
-		
+		Gui, ListView, % this.hLVIncoming
+		LV_Add(, msg.command)
 		response := new this.Message()
 		response.command := "As you wish, master"
-		LV_Add(,msg.command, response.command)
+		Gui, ListView, % this.hLVOutgoing
+		LV_Add(, response.command)
 		newTcp.sendText(JSON.Dump(response))
 		
 		fn := this.ProcessJob.Bind(this, msg)

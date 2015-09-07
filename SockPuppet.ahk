@@ -45,10 +45,22 @@ class SockBase {
 		}
 	}
 	
-	CreateGui(options, lvparams){
-		Gui, Add, ListView, w300 h200, % lvparams
-		LV_ModifyCol(1,140)
-		LV_ModifyCol(2,140)
+	CreateGui(options, type){
+		static seq := {m: ["o", "i"], s: ["i", "o"]}
+		Loop 2 {
+			if(seq[type,A_Index] = "i"){
+				Gui, Add, Text, w300 Center, Incoming Messages
+				Gui, Add, ListView, w300 h200 xm hwndhLVIncoming, A|B
+				this.hLVIncoming := hLVIncoming
+			} else if(seq[type,A_Index] = "o"){
+				Gui, Add, Text, w300 Center, Outgoing Messages
+				Gui, Add, ListView, w300 h200 xm hwndhLVOutgoing, C|D
+				this.hLVOutgoing := hLVOutgoing
+			}
+			added++
+			LV_ModifyCol(1,140)
+			LV_ModifyCol(2,140)
+		}
 		Gui, Add, Button, w300 hwndhwnd, Clear
 		fn := this.Clear.Bind(this)
 		GuiControl +g, % hwnd, % fn

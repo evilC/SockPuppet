@@ -3,7 +3,11 @@
 #include SockPuppet.ahk
 
 mm := new MyMaster()
+return
 
+GuiClose:
+	ExitApp
+	
 class MyMaster extends SockMaster {
 	__New(){
 		base.__New(aPrams*)
@@ -18,14 +22,17 @@ class MyMaster extends SockMaster {
 		msg.command := "Slave, Do something for me"
 		replytext := this.talker.Send(JSON.Dump(msg))
 		reply := JSON.Load(replytext)
-		LV_Add(,msg.command, reply.command)
+		Gui, ListView, % this.hLVOutgoing
+		LV_Add(,msg.command)
+		Gui, ListView, % this.hLVIncoming
+		LV_Add(,reply.command)
 	}
 }
 
 ; Library code ===========================================================
 class SockMaster extends SockBase {
 	__New(){
-		this.CreateGui("x0 y0", "Command|Response")
+		this.CreateGui("x0 y0", "m")
 
 		; Initialize connection settings etc
 		this.talker := new SockTalker("localhost", 12345)
