@@ -2,11 +2,16 @@
 #include <JSON>			; http://ahkscript.org/boards/viewtopic.php?t=627
 
 class SockTalker extends SockBase {
+	__New(address := "localhost", port := 12345){
+		this.address := address
+		this.port := port
+	}
+	
 	Send(message){
-		myTcp := new SocketTCP()
-		myTcp.connect("localhost", 12345)
-		myTcp.sendText(message)
-		return myTcp.recvText()
+		this.myTcp := new SocketTCP()
+		this.myTcp.connect(this.address, this.port)
+		this.myTcp.sendText(message)
+		return this.myTcp.recvText()
 	}
 }
 
