@@ -5,12 +5,15 @@ sm := new SockMaster()
 
 class SockMaster {
 	__New(){
-		this.talker := new SockTalker()
+		; Bind Test Hotkey
 		fn := this.Test.Bind(this)
 		hotkey, F12, % fn
+
+		this.talker := new SockTalker()
 	}
 	
 	Test(){
-		this.talker.Send()
+		reply := this.talker.Send("Slave, do something for me")
+		MsgBox, % "MASTER: " reply
 	}
 }
