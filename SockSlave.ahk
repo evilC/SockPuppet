@@ -11,11 +11,11 @@ GuiClose:
 class MySlave extends SockSlave {
 	ProcessJob(original_msg){
 		Sleep 1000 ; simulate processing of job
-		talker := new SockTalker(original_msg.IPAddress, this.port+1)
+		talker := new SockTalker(original_msg.ComputerName, this.port+1)
 		delayed := new this.Message()
 		delayed.command := "ASYNCH RESPONSE"
 		Gui, ListView, % this.hLVOutgoing
-		LV_Add(, delayed.IPAddress, "(Asynch) " delayed.command)
+		LV_Add(, delayed.ComputerName, "(Asynch) " delayed.command)
 		replytext := talker.Send(JSON.Dump(delayed))
 	}
 }
@@ -36,11 +36,11 @@ class SockSlave extends SockBase {
 		text := newTcp.recvText()
 		msg := JSON.Load(text)
 		Gui, ListView, % this.hLVIncoming
-		LV_Add(, msg.IPAddress, msg.command)
+		LV_Add(, msg.ComputerName, msg.command)
 		response := new this.Message()
 		response.command := "As you wish, master"
 		Gui, ListView, % this.hLVOutgoing
-		LV_Add(, response.IPAddress, response.command)
+		LV_Add(, response.ComputerName, response.command)
 		newTcp.sendText(JSON.Dump(response))
 		
 		fn := this.ProcessJob.Bind(this, msg)
