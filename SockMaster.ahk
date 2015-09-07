@@ -5,10 +5,7 @@ sm := new SockMaster()
 
 class SockMaster extends SockBase {
 	__New(){
-		Gui, Add, ListView, w300 h200, Command|Response
-		LV_ModifyCol(1,140)
-		LV_ModifyCol(2,140)
-		Gui, Show, x0 y0
+		this.CreateGui("x0 y0", "Command|Response")
 		; Bind Test Hotkey
 		fn := this.Test.Bind(this)
 		hotkey, F12, % fn
@@ -16,7 +13,7 @@ class SockMaster extends SockBase {
 		; Initialize connection settings etc
 		this.talker := new SockTalker("localhost", 12345)
 	}
-	
+		
 	; Test code to fire a message off
 	Test(){
 		msg := new this.Message()

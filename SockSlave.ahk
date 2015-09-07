@@ -5,10 +5,7 @@ ss := new SockSlave()
 
 class SockSlave extends SockBase {
 	__New(){
-		Gui, Add, ListView, w300 h200, Command|Response
-		LV_ModifyCol(1,140)
-		LV_ModifyCol(2,140)
-		Gui, Show, x330 y0
+		this.CreateGui("x330 y0", "Command|Response")
 
 		; Initialize listener and set callback
 		this.listener := new SockListener(this.MessageReceived.Bind(this))
