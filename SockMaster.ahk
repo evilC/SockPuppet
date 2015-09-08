@@ -32,11 +32,9 @@ class MyMaster extends SockMaster {
 	Test(){
 		msg := new this.JobMessage()
 		;msg.message := "Run"
-		;msg.path := "IExplore.exe"
+		;msg.params := ["IExplore.exe"]
 		msg.message := "Copy"
 		msg.params := ["C:\Windows\System.ini", "."]
-		;msg.path := "C:\Windows\System.ini"
-		;msg.destination := "."
 		this.UpdateListViews(msg)
 	}
 	
