@@ -13,7 +13,7 @@ class MyMaster extends SockMaster {
 	__New(){
 		IniRead, updatepath, sockmaster.ini, Settings, updatepath
 		this.UpdatePath := updatepath
-		IniRead, slaveaddress, sockmaster.ini, Settings, slaveaddress
+		IniRead, slaveaddress, sockmaster.ini, Settings, slaveaddress, localhost
 		this.SlaveAddress := slaveaddress
 		
 		base.__New(aParams*)
