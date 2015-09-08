@@ -24,20 +24,84 @@ class MySlave extends SockSlave {
 		text := newTcp.recvText()
 		msg := JSON.Load(text)
 		Gui, ListView, % this.hLVIncoming
-		LV_Add(, msg.ComputerName, msg.type, msg.command)
-		response := new this.Ack()
-		response.command := "As you wish, master"
-		Gui, ListView, % this.hLVOutgoing
-		LV_Add(, msg.ComputerName, response.type, response.command)
-		newTcp.sendText(JSON.Dump(response))
+		LV_Add(, msg.ComputerName, msg.type, msg.message)
 		
+		
+		;fn := this.ProcessMessage.Bind(this, msg)
+		fn := this.ProcessMessage.Bind(this, newTcp, msg)
+		SetTimer, % fn, -0
+		
+	}
+	
+	ProcessMessage(newTcp, msg){
+		reload := 0
+		if (!ObjHasKey(msg, "message")){
+			response := new this.FailMessage()
+			response.message := "No message Specified"
+		}
+		
+		if (msg.message = "Reload"){
+			; Restart the script
+			response := new this.AckMessage()
+			response.message := "OK"
+			reload := 1
+		} else if (msg.message = "Update"){
+			; Pull new files from share, reload
+			OutputDebug % "pulling files from " msg.path
+			filesexist := 0
+			IfExist, % msg.path
+			{
+				FileCopy, % msg.path, ., 1
+				filesexist := 1
+			}
+			if (!filesexist){
+				response := new this.FailMessage()
+				response.message := "Could not find " msg.path
+			} else if (ErrorLevel){
+				response := new this.FailMessage()
+				response.message := ErrorLevel " files failed to copy"
+			} else {
+				response := new this.AckMessage()
+				response.message := msg.message " OK"
+				reload := 1
+			}
+		} else if (msg.message = "Run"){
+			Run, % msg.path
+			if (ErrorLevel){
+				response := new this.FailMessage()
+				response.message := "File " msg.path " failed to run"
+			} else {
+				response := new this.AckMessage()
+				response.message := msg.message " OK"
+			}
+		} else {
+			response := new this.FailMessage()
+			response.message := "Unknown Command: " msg.message
+		}
+		Gui, ListView, % this.hLVOutgoing
+		LV_Add(, msg.ComputerName, response.type, response.message)
+		newTcp.sendText(JSON.Dump(response))
+		if (reload){
+			newTcp.__Delete()
+			Reload
+		}
+
+		/*
+		;this.Jobs.push(new this.Job(msg))
+		talker := new SockTalker(msg.ComputerName, 12346)
+		msg := new this.message()
+		msg.message := "TEST"
+		replytext := talker.Send(JSON.Dump(msg))
+		talker.disconnect()
+		*/
 	}
 }
 
 ; Library code ================================
 class SockSlave extends SockBase {
+	Jobs := []
 	__New(){
-		this.CreateGui("x330 y0", "s")
+		this.CreateGui("x0 y0", "s")
 	}
 	
 }

@@ -14,26 +14,44 @@ class SockTalker extends SockBase {
 class SockListener extends SockBase {
 	__New(callback, address := "addr_any", port := 12345){
 		this.callback := callback
-		this.Socket := new SocketTCP()
-		this.Socket.bind(address, port)
-		this.Socket.listen()
-		this.Socket.onAccept := this.OnTCPAccept.Bind(this)
+		Socket := new SocketTCP()
+		Socket.bind(address, port)
+		Socket.listen()
+		Socket.onAccept := this.OnTCPAccept.Bind(this, socket)
 	}
 	
 	; Connection came in, fire callback
-	OnTCPAccept(){
-	  this.callback.(this.Socket)
+	OnTCPAccept(socket){
+	  this.callback.(Socket)
 	}
+	
 }
 
 ; Base class to inherit useful stuff from
 class SockBase {
+	Class Job extends SockBase {
+		__New(original_message){
+			;return
+			; Perform task and report back
+			;Sleep 1000
+			fn := this.DoJob.Bind(this, original_message)
+			SetTimer, % fn, -0
+		}
+		
+		DoJob(original_message){
+			talker := new SockTalker(original_message.ComputerName, 12346)
+			msg := new this.message()
+			msg.message := "TEST"
+			replytext := talker.Send(JSON.Dump(msg))
+		}
+	}
+	
 	; Send a Message, return the response
 	Send(message){
-		this.Socket := new SocketTCP()
-		this.Socket.connect(this.address, this.port)
-		this.Socket.sendText(message)
-		return this.Socket.recvText()
+		Socket := new SocketTCP()
+		Socket.connect(this.address, this.port)
+		Socket.sendText(message)
+		return Socket.recvText()
 	}
 	
 	; Message classes. Designed to be serialized to JSON
@@ -46,11 +64,15 @@ class SockBase {
 		}
 	}
 
-	Class Ack extends SockBase.Message {
+	Class AckMessage extends SockBase.Message {
 		type := "Ack"
 	}
 	
-	Class Job extends SockBase.Message {
+	Class FailMessage extends SockBase.Message {
+		type := "Fail"
+	}
+	
+	Class JobMessage extends SockBase.Message {
 		type := "Job"
 	}
 
@@ -59,11 +81,11 @@ class SockBase {
 		Loop 2 {
 			if(seq[type,A_Index] = "i"){
 				Gui, Add, Text, w300 Center, Incoming Messages
-				Gui, Add, ListView, w300 h200 xm hwndhLVIncoming, From|Type|Command
+				Gui, Add, ListView, w300 h200 xm hwndhLVIncoming, From|Type|Message
 				this.hLVIncoming := hLVIncoming
 			} else if(seq[type,A_Index] = "o"){
 				Gui, Add, Text, w300 Center, Outgoing Messages
-				Gui, Add, ListView, w300 h200 xm hwndhLVOutgoing, To|Type|Command
+				Gui, Add, ListView, w300 h200 xm hwndhLVOutgoing, To|Type|Message
 				this.hLVOutgoing := hLVOutgoing
 			}
 			added++
