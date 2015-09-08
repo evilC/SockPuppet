@@ -38,28 +38,38 @@ class SockBase {
 	
 	; Message classes. Designed to be serialized to JSON
 	Class Message {
+		type := "None"
 		ComputerName := A_ComputerName
 		IPAddress := A_IPAddress1
 		__New(){
 			this.TimeStamp := A_TickCount
 		}
 	}
+
+	Class Ack extends SockBase.Message {
+		type := "Ack"
+	}
 	
+	Class Job extends SockBase.Message {
+		type := "Job"
+	}
+
 	CreateGui(options, type){
 		static seq := {m: ["o", "i"], s: ["i", "o"]}
 		Loop 2 {
 			if(seq[type,A_Index] = "i"){
 				Gui, Add, Text, w300 Center, Incoming Messages
-				Gui, Add, ListView, w300 h200 xm hwndhLVIncoming, From|Command
+				Gui, Add, ListView, w300 h200 xm hwndhLVIncoming, From|Type|Command
 				this.hLVIncoming := hLVIncoming
 			} else if(seq[type,A_Index] = "o"){
 				Gui, Add, Text, w300 Center, Outgoing Messages
-				Gui, Add, ListView, w300 h200 xm hwndhLVOutgoing, To|Command
+				Gui, Add, ListView, w300 h200 xm hwndhLVOutgoing, To|Type|Command
 				this.hLVOutgoing := hLVOutgoing
 			}
 			added++
 			LV_ModifyCol(1,80)
-			LV_ModifyCol(2,200)
+			LV_ModifyCol(2,50)
+			LV_ModifyCol(3,150)
 		}
 		Gui, Add, Button, w300 hwndhwnd, Clear
 		fn := this.Clear.Bind(this)

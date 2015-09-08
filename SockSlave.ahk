@@ -9,15 +9,6 @@ GuiClose:
 	ExitApp
 
 class MySlave extends SockSlave {
-	ProcessJob(original_msg){
-		Sleep 1000 ; simulate processing of job
-		talker := new SockTalker(original_msg.ComputerName, this.port+1)
-		delayed := new this.Message()
-		delayed.command := "ASYNCH RESPONSE"
-		Gui, ListView, % this.hLVOutgoing
-		LV_Add(, original_msg.ComputerName, "(Asynch) " delayed.command)
-		replytext := talker.Send(JSON.Dump(delayed))
-	}
 }
 
 ; Library code ================================
@@ -36,14 +27,12 @@ class SockSlave extends SockBase {
 		text := newTcp.recvText()
 		msg := JSON.Load(text)
 		Gui, ListView, % this.hLVIncoming
-		LV_Add(, msg.ComputerName, msg.command)
-		response := new this.Message()
+		LV_Add(, msg.ComputerName, msg.type, msg.command)
+		response := new this.Ack()
 		response.command := "As you wish, master"
 		Gui, ListView, % this.hLVOutgoing
-		LV_Add(, msg.ComputerName, response.command)
+		LV_Add(, msg.ComputerName, response.type, response.command)
 		newTcp.sendText(JSON.Dump(response))
 		
-		;fn := this.ProcessJob.Bind(this, msg)
-		;SetTimer, % fn, -0	; fire off asynch thread
 	}
 }

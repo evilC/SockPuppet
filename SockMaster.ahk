@@ -21,14 +21,14 @@ class MyMaster extends SockMaster {
 	
 	; Test code to fire a message off
 	Test(){
-		msg := new this.Message()
+		msg := new this.Job()
 		msg.command := "Slave, Do something for me"
 		Gui, ListView, % this.hLVOutgoing
-		LV_Add(, this.address,msg.command)
+		LV_Add(, this.address, msg.type, msg.command)
 		replytext := this.talker.Send(JSON.Dump(msg))
 		reply := JSON.Load(replytext)
 		Gui, ListView, % this.hLVIncoming
-		LV_Add(,reply.ComputerName,reply.command)
+		LV_Add(,reply.ComputerName, reply.type, reply.command)
 	}
 }
 
@@ -45,7 +45,7 @@ class SockMaster extends SockBase {
 		newTcp := socket.accept()
 		text := newTcp.recvText()
 		msg := JSON.Load(text)
-		LV_Add(,msg.ComputerName, msg.command)
+		LV_Add(,msg.ComputerName, msg.type, msg.command)
 		newTcp.sendText(msg)
 	}
 }
