@@ -9,16 +9,13 @@ GuiClose:
 	ExitApp
 
 class MySlave extends SockSlave {
-}
-
-; Library code ================================
-class SockSlave extends SockBase {
 	__New(){
-		this.CreateGui("x330 y0", "s")
-		this.port := 12345
+		base.__New()
+		
+		port := 12345
 
 		; Initialize listener and set callback
-		this.listener := new SockListener(this.MessageReceived.Bind(this), "addr_any", this.port)
+		this.listener := new SockListener(this.MessageReceived.Bind(this), "addr_any", port)
 	}
 	
 	; Callback was fired - message came in.
@@ -35,4 +32,12 @@ class SockSlave extends SockBase {
 		newTcp.sendText(JSON.Dump(response))
 		
 	}
+}
+
+; Library code ================================
+class SockSlave extends SockBase {
+	__New(){
+		this.CreateGui("x330 y0", "s")
+	}
+	
 }
