@@ -80,20 +80,21 @@ class SockBase {
 		static seq := {m: ["o", "i"], s: ["i", "o"]}
 		Loop 2 {
 			if(seq[type,A_Index] = "i"){
-				Gui, Add, Text, w300 Center, Incoming Messages
-				Gui, Add, ListView, w300 h200 xm hwndhLVIncoming, From|Type|Message
+				Gui, Add, Text, w400 Center, Incoming Messages
+				Gui, Add, ListView, w400 h200 xm hwndhLVIncoming, From|Type|Message|Params
 				this.hLVIncoming := hLVIncoming
 			} else if(seq[type,A_Index] = "o"){
-				Gui, Add, Text, w300 Center, Outgoing Messages
-				Gui, Add, ListView, w300 h200 xm hwndhLVOutgoing, To|Type|Message
+				Gui, Add, Text, w400 Center, Outgoing Messages
+				Gui, Add, ListView, w400 h200 xm hwndhLVOutgoing, To|Type|Message|Params
 				this.hLVOutgoing := hLVOutgoing
 			}
 			added++
 			LV_ModifyCol(1,80)
 			LV_ModifyCol(2,50)
-			LV_ModifyCol(3,150)
+			LV_ModifyCol(3,75)
+			LV_ModifyCol(4,175)
 		}
-		Gui, Add, Button, w300 hwndhwnd, Clear
+		Gui, Add, Button, w400 hwndhwnd, Clear
 		fn := this.Clear.Bind(this)
 		GuiControl +g, % hwnd, % fn
 		Gui, Show, % options

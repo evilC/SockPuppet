@@ -31,8 +31,12 @@ class MyMaster extends SockMaster {
 	; Test code to fire a message off
 	Test(){
 		msg := new this.JobMessage()
-		msg.message := "Run"
-		msg.path := "IExplore.exe"
+		;msg.message := "Run"
+		;msg.path := "IExplore.exe"
+		msg.message := "Copy"
+		msg.params := ["C:\Windows\System.ini", "."]
+		;msg.path := "C:\Windows\System.ini"
+		;msg.destination := "."
 		this.UpdateListViews(msg)
 	}
 	
@@ -40,17 +44,21 @@ class MyMaster extends SockMaster {
 	RemoteUpdate(){
 		msg := new this.JobMessage()
 		msg.message := "Update"
-		msg.path := this.UpdatePath
+		;msg.path := this.UpdatePath
+		msg.params := [this.UpdatePath]
 		this.UpdateListViews(msg)
 	}
 	
 	UpdateListViews(msg){
 		Gui, ListView, % this.hLVOutgoing
-		LV_Add(, this.talker.address, msg.type, msg.message)
+		LV_Add(, this.talker.address, msg.type, msg.message, JSON.Dump(msg.params))
 		replytext := this.talker.Send(JSON.Dump(msg))
 		reply := JSON.Load(replytext)
 		Gui, ListView, % this.hLVIncoming
-		LV_Add(,reply.ComputerName, reply.type, reply.message)
+		if (IsObject(reply.params)){
+			p := JSON.Dump(reply.params)
+		}
+		LV_Add(,reply.ComputerName, reply.type, reply.message, p)
 	}
 	
 	/*

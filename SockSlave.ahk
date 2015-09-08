@@ -24,7 +24,7 @@ class MySlave extends SockSlave {
 		text := newTcp.recvText()
 		msg := JSON.Load(text)
 		Gui, ListView, % this.hLVIncoming
-		LV_Add(, msg.ComputerName, msg.type, msg.message)
+		LV_Add(, msg.ComputerName, msg.type, msg.message, JSON.Dump(msg.params))
 		
 		
 		;fn := this.ProcessMessage.Bind(this, msg)
@@ -47,16 +47,18 @@ class MySlave extends SockSlave {
 			reload := 1
 		} else if (msg.message = "Update"){
 			; Pull new files from share, reload
-			OutputDebug % "pulling files from " msg.path
 			filesexist := 0
-			IfExist, % msg.path
+			;IfExist, % msg.path
+			IfExist, % msg.params[1]
 			{
-				FileCopy, % msg.path, ., 1
+				;FileCopy, % msg.path, ., 1
+				FileCopy, % msg.params[1], ., 1
 				filesexist := 1
 			}
 			if (!filesexist){
 				response := new this.FailMessage()
-				response.message := "Could not find " msg.path
+				;response.message := "Could not find " msg.path
+				response.message := "Could not find " msg.params[1]
 			} else if (ErrorLevel){
 				response := new this.FailMessage()
 				response.message := ErrorLevel " files failed to copy"
@@ -65,11 +67,34 @@ class MySlave extends SockSlave {
 				response.message := msg.message " OK"
 				reload := 1
 			}
+		} else if (msg.message = "Copy"){
+			filesexist := 0
+			;IfExist, % msg.path
+			IfExist, % msg.params[1]
+			{
+				;FileCopy, % msg.path, % msg.destination, 1
+				FileCopy, % msg.params[1], % msg.params[2], 1
+				filesexist := 1
+			}
+			if (!filesexist){
+				response := new this.FailMessage()
+				;response.message := "Could not find " msg.path
+				response.message := "Could not find " msg.params[1]
+			} else if (ErrorLevel){
+				response := new this.FailMessage()
+				response.message := ErrorLevel " files failed to copy"
+			} else {
+				response := new this.AckMessage()
+				response.message := msg.message " OK"
+			}
+			
 		} else if (msg.message = "Run"){
-			Run, % msg.path
+			;Run, % msg.path
+			Run, % msg.params[1]
 			if (ErrorLevel){
 				response := new this.FailMessage()
-				response.message := "File " msg.path " failed to run"
+				;response.message := "File " msg.path " failed to run"
+				response.message := "File " msg.params[1] " failed to run"
 			} else {
 				response := new this.AckMessage()
 				response.message := msg.message " OK"
@@ -79,7 +104,8 @@ class MySlave extends SockSlave {
 			response.message := "Unknown Command: " msg.message
 		}
 		Gui, ListView, % this.hLVOutgoing
-		LV_Add(, msg.ComputerName, response.type, response.message)
+		response.params := msg.params
+		LV_Add(, msg.ComputerName, response.type, response.message, JSON.Dump(response.params))
 		newTcp.sendText(JSON.Dump(response))
 		if (reload){
 			newTcp.__Delete()
