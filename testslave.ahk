@@ -6,6 +6,7 @@ s := new Slave()
 
 class Slave {
 	__New(){
+		this.mode := 0	; I want to be able to set this.mode := 1. Why does it not work in this mode?
 		fn := this.Test.Bind(this)
 		hotkey, F11, % fn
 		
@@ -16,7 +17,10 @@ class Slave {
 	}
 
 	Test(){
-		;Sleep 2000		; Doesn't work. Why is this different to the SetTimer being on 2 sec?
+		if (this.mode){
+			OutputDebug % "SLAVE SIMULATING PROCESSING"
+			Sleep 2000		; Doesn't work. Why is this different to the SetTimer being on 2 sec?
+		}
 		; Fire back "Job Complete" message
 		myTcp := new SocketTCP()
 		myTcp.connect("localhost", 12346)	; different port for reply
@@ -30,8 +34,13 @@ class Slave {
 		OutputDebug, % "SLAVE SENDING ACK"
 		newTcp.sendText("Ack")
 		
+		if (this.mode){
+			t := "-0"
+		} else {
+			t := "-2000"
+		}
 		fn := this.Test.Bind(this)
-		SetTimer, % fn, -2000	; Works. Why can this not be fired immediately, and a Sleep in Test() create the delay?
+		SetTimer, % fn, % t	; Works. Why can this not be fired immediately, and a Sleep in Test() create the delay?
 		;SetTimer, % fn, -0
 	}
 }
