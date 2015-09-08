@@ -68,6 +68,9 @@ class SockBase {
 	}
 	
 	Clear(){
+		Gui, ListView, % this.hLVOutgoing
+		LV_Delete()
+		Gui, ListView, % this.hLVIncoming
 		LV_Delete()
 	}
 
