@@ -15,7 +15,7 @@ class MySlave extends SockSlave {
 		delayed := new this.Message()
 		delayed.command := "ASYNCH RESPONSE"
 		Gui, ListView, % this.hLVOutgoing
-		LV_Add(, delayed.ComputerName, "(Asynch) " delayed.command)
+		LV_Add(, original_msg.ComputerName, "(Asynch) " delayed.command)
 		replytext := talker.Send(JSON.Dump(delayed))
 	}
 }
@@ -40,10 +40,10 @@ class SockSlave extends SockBase {
 		response := new this.Message()
 		response.command := "As you wish, master"
 		Gui, ListView, % this.hLVOutgoing
-		LV_Add(, response.ComputerName, response.command)
+		LV_Add(, msg.ComputerName, response.command)
 		newTcp.sendText(JSON.Dump(response))
 		
-		fn := this.ProcessJob.Bind(this, msg)
-		SetTimer, % fn, -0	; fire off asynch thread
+		;fn := this.ProcessJob.Bind(this, msg)
+		;SetTimer, % fn, -0	; fire off asynch thread
 	}
 }
